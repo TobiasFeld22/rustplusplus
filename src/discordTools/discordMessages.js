@@ -202,12 +202,13 @@ module.exports = {
     sendDecayingNotificationMessage: async function (guildId, serverId, entityId) {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].storageMonitors[entityId];
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [DiscordEmbeds.getDecayingNotificationEmbed(guildId, serverId, entityId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -216,12 +217,13 @@ module.exports = {
     sendStorageMonitorDisconnectNotificationMessage: async function (guildId, serverId, entityId) {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].storageMonitors[entityId];
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [DiscordEmbeds.getStorageMonitorDisconnectNotificationEmbed(guildId, serverId, entityId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -230,12 +232,13 @@ module.exports = {
     sendStorageMonitorNotFoundMessage: async function (guildId, serverId, entityId) {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].storageMonitors[entityId];
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [await DiscordEmbeds.getStorageMonitorNotFoundEmbed(guildId, serverId, entityId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -257,12 +260,13 @@ module.exports = {
     sendSmartAlarmNotFoundMessage: async function (guildId, serverId, entityId) {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].alarms[entityId];
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [await DiscordEmbeds.getSmartAlarmNotFoundEmbed(guildId, serverId, entityId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -271,12 +275,13 @@ module.exports = {
     sendSmartAlarmTriggerMessage: async function (guildId, serverId, entityId) {
         const instance = Client.client.getInstance(guildId);
         const entity = instance.serverList[serverId].alarms[entityId];
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [await DiscordEmbeds.getAlarmEmbed(guildId, serverId, entityId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', `resources/images/electrics/${entity.image}`))],
-            content: entity.everyone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -294,12 +299,13 @@ module.exports = {
 
     sendServerWipeDetectedMessage: async function (guildId, serverId) {
         const instance = Client.client.getInstance(guildId);
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         const content = {
             embeds: [DiscordEmbeds.getServerWipeDetectedEmbed(guildId, serverId)],
             files: [new Discord.AttachmentBuilder(
                 Path.join(__dirname, '..', '..', `maps/${guildId}_map_full.png`))],
-            content: instance.generalSettings.mapWipeNotifyEveryone ? '@everyone' : ''
+            content: entity.everyone ? (useRole ? `<@&${role}>` : '@everyone') : ''
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -346,7 +352,8 @@ module.exports = {
 
     sendActivityNotificationMessage: async function (guildId, serverId, color, text, steamId, title = null, everyone = false) {
         const instance = Client.client.getInstance(guildId);
-
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         let png = null;
         if (steamId !== null) {
             png = await Scrape.scrapeSteamProfilePicture(Client.client, steamId);
@@ -354,8 +361,9 @@ module.exports = {
         const content = {
             embeds: [DiscordEmbeds.getActivityNotificationEmbed(guildId, serverId, color, text, steamId, png, title)]
         }
-
-        if (everyone) {
+        if (useRole){
+            content.content = `<@&${role}>`
+        } else if (everyone) {
             content.content = '@everyone';
         }
 
@@ -584,8 +592,12 @@ module.exports = {
         const content = {
             embeds: [DiscordEmbeds.getBattlemetricsEventEmbed(guildId, battlemetricsId, title, description, fields)]
         }
-
-        if (everyone) {
+        const role = instance.role
+        const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
+        
+        if (useRole){
+            content.content = `<@&${role}>`
+        }else if (everyone) {
             content.content = '@everyone';
         }
 
