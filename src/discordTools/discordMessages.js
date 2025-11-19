@@ -361,10 +361,12 @@ module.exports = {
         const content = {
             embeds: [DiscordEmbeds.getActivityNotificationEmbed(guildId, serverId, color, text, steamId, png, title)]
         }
-        if (useRole){
-            content.content = `<@&${role}>`
-        } else if (everyone) {
-            content.content = '@everyone';
+        if (everyone) {
+            if (useRole){
+                content.content = `<@&${role}>`
+            } else {
+                content.content = '@everyone';
+            }
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
@@ -595,10 +597,12 @@ module.exports = {
         const role = instance.role
         const useRole = role != undefined && instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton
         
-        if (useRole){
-            content.content = `<@&${role}>`
-        }else if (everyone) {
-            content.content = '@everyone';
+        if (everyone) {
+            if (useRole){
+                content.content = `<@&${role}>`
+            } else {
+                content.content = '@everyone';
+            }
         }
 
         await module.exports.sendMessage(guildId, content, null, instance.channelId.activity);
