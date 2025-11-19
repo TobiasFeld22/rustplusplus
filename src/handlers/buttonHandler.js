@@ -117,6 +117,22 @@ module.exports = async (client, interaction) => {
                 instance.generalSettings.inGameCommandsEnabled)]
         });
     }
+    else if (interaction.customId === 'UseRoleInsteadOfEveryoneMention') {
+        instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton = !instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton;
+        client.setInstance(guildId, instance);
+
+        if (rustplus) rustplus.generalSettings.useRoleInsteadOfEveryoneMentionsButton = instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton;
+
+        client.log(client.intlGet(null, 'infoCap'), client.intlGet(null, 'buttonValueChange', {
+            id: `${verifyId}`,
+            value: `${instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton}`
+        }));
+
+        await client.interactionUpdate(interaction, {
+            components: [DiscordButtons.getUseRoleInsteadOfEveryoneMentionButton(guildId,
+                instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton)]
+        });
+    }
     else if (interaction.customId === 'BotMutedInGame') {
         instance.generalSettings.muteInGameBotMessages = !instance.generalSettings.muteInGameBotMessages;
         client.setInstance(guildId, instance);

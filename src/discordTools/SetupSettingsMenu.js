@@ -123,6 +123,18 @@ async function setupGeneralSettings(client, guildId, channel) {
     await client.messageSend(channel, {
         embeds: [DiscordEmbeds.getEmbed({
             color: Constants.COLOR_SETTINGS,
+            title: "Should the bot use the role (if set) instead of \@everyone mentions?",
+            thumbnail: `attachment://settings_logo.png`
+        })],
+        components: [DiscordButtons.getUseRoleInsteadOfEveryoneMentionButton(guildId,
+            instance.generalSettings.useRoleInsteadOfEveryoneMentionsButton)],
+        files: [new Discord.AttachmentBuilder(
+            Path.join(__dirname, '..', 'resources/images/settings_logo.png'))]
+    });
+
+    await client.messageSend(channel, {
+        embeds: [DiscordEmbeds.getEmbed({
+            color: Constants.COLOR_SETTINGS,
             title: client.intlGet(guildId, 'shouldBotBeMutedSetting'),
             thumbnail: `attachment://settings_logo.png`
         })],
